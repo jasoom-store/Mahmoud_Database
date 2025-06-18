@@ -10,6 +10,9 @@ pip install -r required_pips
 ## Use Git
 gh auth login
 
+<!-- Fix -->
+git config advice.useCoreFSMonitorConfig false
+
 - pull => 
 git pull
 
