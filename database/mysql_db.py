@@ -13,5 +13,10 @@ class MYSQL_DB(Database):
         )
         cls.cur = cls.con.cursor()
     
+    # def __new__(cls, db):
+    #     if not hasattr(cls, 'instance'):
+    #         cls.instance = super(MYSQL_DB, cls).__new__(cls)
+    #     return cls.instance
+    
 
         
