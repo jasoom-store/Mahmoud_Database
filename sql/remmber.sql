@@ -1,6 +1,8 @@
 -- MySQL
 SELECT * FROM `tabel_name`
 
+CREATE DATABASE tettt CHARACTER SET utf8;
+
 -- SQLite
 SELECT * FROM `tabel_name`
 
@@ -72,3 +74,17 @@ create table colors_log (
 
 rgb(0-255, 0-255, 0-255)
 ----------------------------------------------------------------
+
+SELECT users.user_id, users.username, posts.user_id, posts.title FROM users, posts
+
+
+users(
+    user_id,
+    username,
+    password,
+    gendor,
+
+)
+
+SELECT username, password, gendor FROM users
+
