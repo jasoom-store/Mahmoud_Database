@@ -97,11 +97,10 @@ class MYSQL_DB(Database):
                 # if data[key]['type'] == cls.types['int']:
                 #     column += ' ZEROFILL'
 
-                if data[key]['type'] != cls.types['int']:
-                    if 'nu' in data[key] and data[key]['nu']:
-                        column += ' NULL'
-                    else:
-                        column += ' NOT NULL'
+                if 'nu' in data[key] and data[key]['nu']:
+                    column += ' NULL'
+                else:
+                    column += ' NOT NULL'
                 
                 # REMMBER: never use DEFAULT with ( FOREIGN KEY || UNIQUE || PRIMARY KEY )
                 if (
