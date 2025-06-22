@@ -7,6 +7,7 @@ print(" ")
 print("=" * 30)
 print(" ")
 
+# select which kind of database I will use
 db = DB.run({
     'type': 'MYSQL',
     'host': 'localhost',
@@ -20,9 +21,21 @@ db = DB.run({
 #     'path': 'sqlite/main.db'
 # })
 
-print(db)
+# print(db)
 
-print(db.get_all('about'))
+# print(db.delete_all('users'))
+# print(db.get_all('tt'))
+# print(db.update_data('users', {
+#     'username' : 'mmmmmmmmm',
+#     'password' : 'mmmmmmmmmm',
+# }, 'id', 3))
+# print(db.update_data('tt', {
+#     'name' : 'aliiiiiiiii',
+# }, 'id', 3))
+# print(db.add_data('tt', {
+#     'name' : 'faccccccccttt',
+# }))
+print(db.get_last_pk('tt', 'id'))
 
 
 print(" ")

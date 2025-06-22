@@ -10,7 +10,7 @@ class MYSQL_DB(Database):
             password = db['pass'],
             database = db['name'],
             use_pure = True
-        )
+        )   
         cls.cur = cls.con.cursor()
     
     # def __new__(cls, db):
