@@ -11,8 +11,21 @@ class Database(metaclass=ABCMeta):
     # def cur(self):
     #     raise NotImplemented
 
+    con = NotImplemented
+    cur = NotImplemented
+
     @abstractmethod
     def __init__() -> None:   
+        raise NotImplemented
+
+    @classmethod
+    @abstractmethod
+    def reset_auto_increment(cls, table_name : str) -> bool:   
+        raise NotImplemented
+
+    @classmethod
+    @abstractmethod
+    def create_table(cls, table_name : str, table_schema : dict) -> bool:   
         raise NotImplemented
 
     @classmethod
@@ -58,24 +71,23 @@ class Database(metaclass=ABCMeta):
 
     #Select * from MAIN where `date` between '01.03.2020' and '05.03.2020';
     @classmethod
-    def get_some(cls, table_name: str, column_name: str, condition1, condition2):
+    def get_some(cls, table_name : str, pk : str, pk_1 : str, pk_2 : str):
 
-        sql = f'SELECT * FROM "{table_name}" WHERE "{column_name}" BETWEEN {condition1} AND {condition2}'
+        sql = f'SELECT * FROM `{ table_name }` WHERE `{ pk }` BETWEEN { pk_1 } AND { pk_2 }'
         try:
             cls.cur.execute(sql)
 
             columns = cls.cur.description
 
-            result = [
-                {columns[ind][0]: col for ind, col in enumerate(value)}
-                for value in cls.cur.fetchall()
-            ]
+            result = [{
+                columns[ind][0]: col for ind, col in enumerate(value)
+            } for value in cls.cur.fetchall() ]
 
             return result
 
-        except Exception as e:
-            print("Error:", e)
+        except:
             return False
+
     # add data to database
     @classmethod
     def add_data(cls, table_name : str, data : dict):
@@ -86,18 +98,17 @@ class Database(metaclass=ABCMeta):
         2 -> data as dictionary
         """
         try:
-            sql = f'INSERT INTO {table_name} ('
-            for colume in data :
-                if type(data[colume]) == str or type(data[colume]) == int :
-                    sql += f"{colume}, "
+            sql = f'INSERT INTO `{ table_name }` ('
+            for colume in data:
+                if type(data[colume]) == str or type(data[colume]) == int:
+                    sql += f'{ colume }, '
             sql = sql[:-2]
             sql += ") VALUES ("
             for colume in data :
                 if type(data[colume]) == str:
-                    sql += f'"{data[colume]}", '
+                    sql += f"'{data[colume]}', "
                 elif type(data[colume]) == int:
                     sql += f'{str(data[colume])}, '
-
             sql = sql[:-2]
             sql += ')'
 
@@ -105,15 +116,16 @@ class Database(metaclass=ABCMeta):
             cls.con.commit()
             return True
         except:
-            False
+            return False
+        
     # drop table
     @classmethod
-    def drop_table(cls, table_name : str):
+    def delete_table(cls, table_name : str):
         """
         function for drop table, it takes name  of table as an arguement
         """
         try:
-            sql = f'DROP TABLE "{table_name}"'
+            sql = f'DROP TABLE `{ table_name }`'
             cls.cur.execute(sql)
             cls.con.commit()
             return True
@@ -129,13 +141,12 @@ class Database(metaclass=ABCMeta):
         it takes name  of table as an arguement
         """
         try:
-            sql = f'DELETE FROM "{table_name}"'
+            sql = f'DELETE FROM "{ table_name }"'
             cls.cur.execute(sql)
             cls.con.commit()
             return True
         except:
-            return 
-        
+            return False
 
     # delete one row by condition
     @classmethod
@@ -146,7 +157,7 @@ class Database(metaclass=ABCMeta):
         second arguement is a condition
         """
         try:
-            sql = f'DELETE FROM "{table_name}"'
+            sql = f'DELETE FROM `{ table_name }`'
             sql += f' WHERE { where }'
             cls.cur.execute(sql)
             cls.con.commit()
@@ -164,7 +175,7 @@ class Database(metaclass=ABCMeta):
         then primary key as a second arguement
         """
         try:
-            sql = f'DELETE FROM "{table_name}"'
+            sql = f'DELETE FROM `{ table_name }`'
             sql += f' WHERE id = { pk }'
             cls.cur.execute(sql)
             cls.con.commit()
@@ -172,12 +183,11 @@ class Database(metaclass=ABCMeta):
         except:
             return False
         
-
     #update data
     @classmethod
     def update_data(cls, table_name : str, data : dict, pk : str, value_pk : str):
         try:
-            sql = f'UPDATE `{table_name}` SET '
+            sql = f'UPDATE `{ table_name }` SET '
             for colume in data:
                 if type(data[colume]) == str or type(data[colume]) == int:
                     sql += f'`{colume}` = ' 
@@ -199,6 +209,7 @@ class Database(metaclass=ABCMeta):
             return True
         except:
             return False
+
     # SELECT * FROM users ORDER BY id DESC LIMIT 1;
     @classmethod
     def get_last_pk(cls, table_name : str, pk : str):
