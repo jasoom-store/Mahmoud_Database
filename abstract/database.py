@@ -20,16 +20,16 @@ class Database(metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def reset_auto_increment(cls, table_name : str) -> bool:   
+    def db_reset_auto_increment(cls, table_name : str) -> bool:   
         raise NotImplemented
 
     @classmethod
     @abstractmethod
-    def create_table(cls, table_name : str, table_schema : dict) -> bool:   
+    def db_create_table(cls, table_name : str, table_schema : dict) -> bool:   
         raise NotImplemented
 
     @classmethod
-    def get_all(cls, table_name : str, where : str = '', limit : int = 0):
+    def db_get_all(cls, table_name : str, where : str = '', limit : int = 0):
         sql  = f"SELECT * FROM `{ table_name }`"
         sql += f" WHERE { where }" if len(where) > 0 else ''
         sql += f" LIMIT { str(limit) }" if limit > 0 else ''
@@ -48,7 +48,7 @@ class Database(metaclass=ABCMeta):
             return False
 
     @classmethod
-    def get_by_pk(cls, table_name : str, pk : str, pk_value : str):
+    def db_get_by_pk(cls, table_name : str, pk : str, pk_value : str):
         sql = f"SELECT * FROM `{ table_name }`"  
         sql += f" WHERE `{ pk }` = { pk_value }"
         try:
@@ -71,7 +71,7 @@ class Database(metaclass=ABCMeta):
 
     #Select * from MAIN where `date` between '01.03.2020' and '05.03.2020';
     @classmethod
-    def get_some(cls, table_name : str, pk : str, pk_1 : str, pk_2 : str):
+    def db_get_some(cls, table_name : str, pk : str, pk_1 : str, pk_2 : str):
 
         sql = f'SELECT * FROM `{ table_name }` WHERE `{ pk }` BETWEEN { pk_1 } AND { pk_2 }'
         try:
@@ -90,7 +90,7 @@ class Database(metaclass=ABCMeta):
 
     # add data to database
     @classmethod
-    def add_data(cls, table_name : str, data : dict):
+    def db_add_data(cls, table_name : str, data : dict):
         """
         add data to database :
         it takes 2 arguement 
@@ -120,7 +120,7 @@ class Database(metaclass=ABCMeta):
         
     # drop table
     @classmethod
-    def delete_table(cls, table_name : str):
+    def db_delete_table(cls, table_name : str):
         """
         function for drop table, it takes name  of table as an arguement
         """
@@ -135,7 +135,7 @@ class Database(metaclass=ABCMeta):
 
     # delete all rows in the table
     @classmethod
-    def delete_all(cls, table_name : str):
+    def db_delete_all(cls, table_name : str):
         """
         function all rows in the table, 
         it takes name  of table as an arguement
@@ -150,7 +150,7 @@ class Database(metaclass=ABCMeta):
 
     # delete one row by condition
     @classmethod
-    def delete_one(cls, table_name : str, where : str):
+    def db_delete_one(cls, table_name : str, where : str):
         """
         function delete one row, 
         it takes name  of table as an arguement, 
@@ -168,7 +168,7 @@ class Database(metaclass=ABCMeta):
 
     # delete by PRIMARY KEY
     @classmethod
-    def delete_by_pk(cls, table_name : str, pk : int):
+    def db_delete_by_pk(cls, table_name : str, pk : int):
         """
         function for delete a row with condition, 
         it takes name  of table as a first arguement
@@ -185,7 +185,7 @@ class Database(metaclass=ABCMeta):
         
     #update data
     @classmethod
-    def update_data(cls, table_name : str, data : dict, pk : str, value_pk : str):
+    def db_update_data(cls, table_name : str, data : dict, pk : str, value_pk : str):
         try:
             sql = f'UPDATE `{ table_name }` SET '
             for colume in data:
@@ -212,7 +212,7 @@ class Database(metaclass=ABCMeta):
 
     # SELECT * FROM users ORDER BY id DESC LIMIT 1;
     @classmethod
-    def get_last_pk(cls, table_name : str, pk : str):
+    def db_get_last_pk(cls, table_name : str, pk : str):
         sql = f'SELECT `{ pk }` FROM `{ table_name }` ORDER BY `{ pk }` DESC LIMIT 1'
         try:
             cls.cur.execute(sql)

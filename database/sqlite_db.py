@@ -29,7 +29,7 @@ class SQLite_DB(Database):
     #     return cls.instance
 
     @classmethod
-    def reset_auto_increment(cls, table_name : str) -> bool:
+    def db_reset_auto_increment(cls, table_name : str) -> bool:
         try:
             sql = f"UPDATE SQLITE_SEQUENCE SET SEQ = 0 WHERE NAME = '{ table_name }'"
             cls.cur.execute(sql)
@@ -41,7 +41,7 @@ class SQLite_DB(Database):
     
     # CREATE TABLE
     @classmethod
-    def create_table(cls, table_name : str, data : dict) -> bool:
+    def db_create_table(cls, table_name : str, data : dict) -> bool:
         fk = ""
 
         sql = f'CREATE TABLE `{ table_name }` ( '
@@ -70,11 +70,11 @@ class SQLite_DB(Database):
 
             # REMMBER: never use DEFAULT with ( FOREIGN KEY || UNIQUE || PRIMARY KEY )
             if (
-                    'dv' in data[key]
-                    and 'fk' not in data[key]
-                    and 'un' not in data[key]
-                    and 'pk' not in data[key]
-                ):
+                'dv' in data[key]
+                and 'fk' not in data[key]
+                and 'un' not in data[key]
+                and 'pk' not in data[key]
+            ):
                 column += f" DEFAULT { data[key]['dv'] }"
 
             if 'fk' in data[key]:

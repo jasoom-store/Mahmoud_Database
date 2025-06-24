@@ -39,7 +39,7 @@ class MYSQL_DB(Database):
     #     return cls.instance
     
     @classmethod
-    def reset_auto_increment(cls, table_name : str) -> bool:
+    def db_reset_auto_increment(cls, table_name : str) -> bool:
         try:
             sql = f"ALTER TABLE `{ table_name }` AUTO_INCREMENT = 1"
             cls.cur.execute(sql)
@@ -54,7 +54,7 @@ class MYSQL_DB(Database):
     # )
     # CREATE TABLE
     @classmethod
-    def create_table(cls, table_name : str, data : dict) -> bool:
+    def db_create_table(cls, table_name : str, data : dict) -> bool:
         pk = ""
         fk = ""
 
