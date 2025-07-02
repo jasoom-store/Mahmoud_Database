@@ -6,13 +6,18 @@ class MYSQL_DB(Database):
         # STR
         'str'      : 'VARCHAR',
         'string'   : 'TEXT',
-
-        # 
-        'bool'     : 'BOOL',
-        'float'    : 'DOUBLE',
         'varchar'  : 'VARCHAR',
         'char'     : 'CHAR',
-        'json'     : 'JSON',
+
+        # float
+        'float'    : 'FLOAT', # 0 to 23
+        'double'   : 'DOUBLE', # 24 to 53
+
+        # tnyint | -128 to 127 | 255 | 2
+        # smlint | -32768 to 32767 | 65535 | 4
+        # midint | -8388608 to 8388607 | 16777215 | 6
+        # int    | -2147483648 to 2147483647 | 4294967295 | 9
+        # bigint | -9223372036854775808 to 9223372036854775807 | 18446744073709551615 | 18
 
         # INT
         'tnyint'   : 'TINYINT', # 2
@@ -20,6 +25,10 @@ class MYSQL_DB(Database):
         'midint'   : 'MEDIUMINT', # 6
         'int'      : 'INT', # 9
         'bigint'   : 'BIGINT', # 18
+
+        # Other
+        'bool'     : 'BOOL',
+        'json'     : 'JSON',
     }
 
     @classmethod
@@ -55,9 +64,7 @@ class MYSQL_DB(Database):
     # CREATE TABLE
     @classmethod
     def db_create_table(cls, table_name : str, data : dict) -> bool:
-        pk = ""
         fk = ""
-
         sql = f'CREATE TABLE `{ table_name }` ( '
 
         for key in data:
@@ -66,36 +73,47 @@ class MYSQL_DB(Database):
             if data[key]['type'] != '':
                 # INT
                 if data[key]['type'] == cls.types['int']:
-                    if data[key]['ln'] <= 2:
-                        column += cls.types['tnyint']
-                    elif data[key]['ln'] <= 4:
-                        column += cls.types['smlint']
-                    elif data[key]['ln'] <= 6:
-                        column += cls.types['midint']
-                    elif data[key]['ln'] > 9:
-                        column += cls.types['bigint']
-                    else:
-                        column += data[key]['type']
-                # STR
-                elif data[key]['type'] == cls.types['str']:
-                    column += data[key]['type']
+                    match data[key]['ln']:
+                        case x if x <= 2:
+                            column += cls.types['tnyint']
+                        case x if x <= 4:
+                            column += cls.types['smlint']
+                        case x if x <= 6:
+                            column += cls.types['midint']
+                        case x if x <= 9:
+                            column += cls.types['int']
+                        case _:
+                            column += cls.types['bigint']
+                # Float
+                elif data[key]['type'] == cls.types['float'] or data[key]['type'] == cls.types['double']:
+                    match data[key]['ln']:
+                        case x if x <= 23:
+                            column += cls.types['float']
+                        case _:
+                            column += cls.types['double']
                 else:
                     column += data[key]['type']
 
-                # INT
-                if data[key]['type'] == cls.types['json']:
+                # When type have no size
+                if (
+                    data[key]['type'] == cls.types['json']
+                    or data[key]['type'] == cls.types['bool']
+                ):
                     pass
                 else:
                     column += f"({ str(data[key]['ln']) })"
 
                 if data[key]['type'] == cls.types['int']:
-                    if 'si' in data[key] and data[key]['si']:
-                        column += ' SIGNED'
+                    if (
+                        'zf' in data[key] and not data[key]['zf']
+                        or 'si' in data[key]
+                    ):
+                        if 'si' in data[key] and data[key]['si']:
+                            column += ' SIGNED'
+                        else:
+                            column += ' UNSIGNED'
                     else:
-                        column += ' UNSIGNED'
-
-                # if data[key]['type'] == cls.types['int']:
-                #     column += ' ZEROFILL'
+                        column += ' ZEROFILL'
 
                 if 'nu' in data[key] and data[key]['nu']:
                     column += ' NULL'
@@ -111,11 +129,7 @@ class MYSQL_DB(Database):
                 ):
                     column += f" DEFAULT { data[key]['dv'] }"
                 
-                # REMMBER: never use AUTO_INCREMENT without PK
-                if (
-                    'ai' in data[key] and data[key]['ai']
-                    and 'pk' in data[key] and data[key]['pk']
-                ):
+                if 'ai' in data[key] and data[key]['ai']:
                     column += ' AUTO_INCREMENT'
 
                 # REMMBER: never use UNIQUE with PRIMARY KEY
@@ -127,17 +141,13 @@ class MYSQL_DB(Database):
             
             column += ', '
 
-            # if 'pk' in data[key] and data[key]['pk']:
-            #     pk = f', PRIMARY KEY (`{ key }`)'
-
             if 'fk' in data[key]:
                 fk  = f", FOREIGN KEY `{ table_name }`(`{ key }`)"
                 fk += f" REFERENCES `{ data[key]['fk'] }`(`{ key }`)"
 
             sql += column
-        sql  = sql[:-2] + pk + fk + ' )'
+        sql  = sql[:-2] + fk + ' )'
 
-        # return sql
         try:
             cls.cur.execute(sql)
             cls.con.commit()

@@ -3,18 +3,26 @@ from abstract.database import Database
 
 class SQLite_DB(Database):
     types = {
-        'bool'    : 'BOOL',
-        'float'   : 'REAL',
-
         # STR
-        'str'     : 'TEXT',
-        'string'  : 'TEXT',
-        'varchar' : 'TEXT',
-        'char'    : 'TEXT',
-        'json'    : 'TEXT',
+        'str'      : 'TEXT',
+        'string'   : 'TEXT',
+        'varchar'  : 'TEXT',
+
+        # float
+        'float'    : 'REAL',
+        'double'   : 'REAL',
 
         # INT
-        'int'     : 'INTEGER',
+        'tnyint'   : 'INTEGER',
+        'smlint'   : 'INTEGER',
+        'midint'   : 'INTEGER',
+        'int'      : 'INTEGER',
+        'bigint'   : 'INTEGER',
+
+        # Other
+        'bool'     : 'BOOL',
+        'char'     : 'TEXT',
+        'json'     : 'TEXT',
     }
 
     @classmethod
