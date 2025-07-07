@@ -11,4 +11,4 @@ database = {
 #     'path': 'sqlite/main.db'
 # }
 
-table_hix = 'rnd_'
+hix = 'rnd_'

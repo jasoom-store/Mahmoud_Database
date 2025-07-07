@@ -7,6 +7,7 @@ class SQLite_DB(Database):
         'str'      : 'TEXT',
         'string'   : 'TEXT',
         'varchar'  : 'TEXT',
+        'char'     : 'TEXT',
 
         # float
         'float'    : 'REAL',
@@ -21,7 +22,6 @@ class SQLite_DB(Database):
 
         # Other
         'bool'     : 'BOOL',
-        'char'     : 'TEXT',
         'json'     : 'TEXT',
     }
 
@@ -86,7 +86,7 @@ class SQLite_DB(Database):
                 column += f" DEFAULT { data[key]['dv'] }"
 
             if 'fk' in data[key]:
-                fk  = f", FOREIGN KEY `{ table_name }`(`{ key }`)"
+                fk  = f", FOREIGN KEY (`{ key }`)"
                 fk += f" REFERENCES `{ data[key]['fk'] }`(`{ key }`)"
             
             column += ', '

@@ -1,5 +1,6 @@
 import mysql.connector
 from abstract.database import Database
+from config import config
 
 class MYSQL_DB(Database):
     types = {
@@ -142,7 +143,7 @@ class MYSQL_DB(Database):
             column += ', '
 
             if 'fk' in data[key]:
-                fk  = f", FOREIGN KEY `{ table_name }`(`{ key }`)"
+                fk += f", FOREIGN KEY `{ table_name[len(config.hix):] }_{ key }`(`{ key }`)"
                 fk += f" REFERENCES `{ data[key]['fk'] }`(`{ key }`)"
 
             sql += column
